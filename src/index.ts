@@ -1,41 +1,19 @@
 import { Hono } from 'hono'
-import { basicAuth } from 'hono/basic-auth'
-import { upgradeWebSocket } from 'hono/cloudflare-workers'
+import users from './controllers/users'
+import books from './controllers/books'
 
 const app = new Hono()
 
-app.use(
-  '/admin/*',
-  basicAuth({
-    username: 'admin',
-    password: 'secret2',
-  })
-)
+app.route('/users', users)
+app.route('/books', books)
 
-
-app.get('/', (c) => {
-  //return c.text('Hello Hono!')
-  return new Response('Good morning!')
+app.notFound((c) => {
+  return c.text('Custom 404 Message', 404)
 })
 
-app.get('/api/hello', (c) => {
-  return c.json({
-    ok: true,
-    message: 'Hello Hono!',
-  })
+app.onError((err, c) => {
+  console.error(`${err}`)
+  return c.text(err.message, 500)
 })
-
-// :id가 타입으로 되는게 좋다. 어떻게 가능한거지?
-app.get('/posts/:id', (c) => {
-  const page = c.req.query('page')
-  const id = c.req.param('id')
-  c.header('X-Message', 'Hi!')
-  return c.text(`You want see ${page} of ${id}`)
-})
-
-app.post('/posts', (c) => c.text('Created!', 201))
-app.delete('/posts/:id', (c) =>
-  c.text(`${c.req.param('id')} is deleted!`)
-)
 
 export default app
