@@ -1,22 +1,7 @@
+import { z } from "zod";
 import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
-import { z } from "zod";
-
-type User = {
-  id: number,
-  name: string,
-  age: number,
-}
-
-type UserData = {
-  Variables: User
-}
-
-type UsersData = {
-  Variables: {
-    users: User[]
-  }
-}
+import { User, UserData, UsersData  } from './users.d'
 
 const db: User[] = [
   {
@@ -31,6 +16,7 @@ const db: User[] = [
   }
 ]
 
+// 정의한 데이터와 동일한 포맷인지 검사한다.
 const schema = z.object({
   id: z.number(),
   name: z.string(),
