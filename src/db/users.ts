@@ -3,6 +3,10 @@ import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { User, UserData, UsersData  } from './users.d'
 
+type Bindings = {
+  MY_PASSWORD: string
+}
+
 const db: User[] = [
   {
     id: 1,
@@ -13,7 +17,7 @@ const db: User[] = [
     id: 2,
     name: 'Bun',
     age: 5,
-  }
+  },
 ]
 
 // 정의한 데이터와 동일한 포맷인지 검사한다.
@@ -23,8 +27,17 @@ const schema = z.object({
   age: z.number(),
 })
 
-export const findUsers = createFactory<UsersData>().createMiddleware(async (c, next) => {
+type A = UsersData & Bindings;
+
+
+export const findUsers = createFactory<UsersData & { Bindings: Bindings }>().createMiddleware(async (c, next) => {
   const users = await db.map(user => schema.parse(user))
+  users.push({
+    id: users.length + 1,
+    name: c.env.MY_PASSWORD,
+    age: users.length + 1,
+  })
+
   c.set('users', users)
   await next()
 })
