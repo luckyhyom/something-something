@@ -2,7 +2,9 @@
   "name": "my-app",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
+    "deploy": "wrangler deploy --minify",
+    "whoami": "wrangler whoami",
+    "logout": "wrangler logout"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.2",
